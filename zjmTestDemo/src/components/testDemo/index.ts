@@ -1,3 +1,4 @@
 import TestExcel from "./testExcel.vue";
+import TestExcel2 from "./testExcel2.vue";
 
-export { TestExcel };
+export { TestExcel, TestExcel2 };
