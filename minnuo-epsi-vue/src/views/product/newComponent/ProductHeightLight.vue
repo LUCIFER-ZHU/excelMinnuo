@@ -7,12 +7,14 @@
           </el-form-item>
 
           <el-form-item label="亮点图片">
-            <MnUploadAsy 
-            :key="'upload' + item" ref="upload"  
-            where="product" 
-            limit="1" 
-            :initData="this.initData"
-            exceedMessage="亮点图片只能上传1张"></MnUploadAsy>
+              <MnUploadAsy
+              :key="'upload' + item"
+              ref="upload"
+              where="product"
+              :limit="1"
+              :initFiles="item.initFiles"
+              exceedMessage="亮点图片只能上传1张">
+            </MnUploadAsy>
           </el-form-item>
 
           <el-form-item label="亮点介绍">
@@ -54,20 +56,17 @@ export default {
     MnTag
   },
   props: {
-    // 初始数据，没有就不传
-    initData: {
-      type: Array,
-      default: () => {
-        return [{intro: '',picture: '',summarize: []}]
-      }
-    }
   },
   data() {
     return {
       // 表单数据
-      ruleForm: [],
+      ruleForm: [
+          {
+            intro: ''
+          }        
+      ],
       // 控制删除按钮是否起作用
-      isDelete: true
+      isDelete: true,
     }
   },
   methods: {
@@ -115,43 +114,32 @@ export default {
       // 最后清除外层的内容
       this.ruleForm = [{intro: ''}];
     },
-    // initData(hightLight) {
-    //   if(hightLight === null || hightLight.length === 0){
-    //     return;
-    //   }
+    initData(hightLight) {
+      if(hightLight === null || hightLight.length === 0){
+        return;
+      }
 
-    //   this.ruleForm = []
-    //   hightLight.forEach((item,index) => {
-    //     this.ruleForm.push({intro: item.intro})
-    //     // 等待页面刷新完毕
-    //     this.$nextTick(() => {
-    //       this.$refs.upload[index].loadData(item.picture)
-    //       this.$refs.tag[index].loadData(item.summarize)
-    //     })
-    //   })
-    // },
+      this.ruleForm = []
+      hightLight.forEach((item,index) => {
+        const tempRuleItem = {intro: item.intro}
+        if (typeof item.picture === 'string') {
+          tempRuleItem.initFiles = [item.picture]
+        }
+        this.ruleForm.push(tempRuleItem);
+        // 等待页面刷新完毕
+        this.$nextTick(() => {
+          this.$refs.tag[index].loadData(item.summarize)
+        })
+      })
+    },
     // 抽象的内容获取函数，这样可以把两个组件的获取逻辑合并
     childComponentMethod(refName, getDataMethod){
-      return this.$refs[refName].map(child => {
+      return this.$refs[refName]?.map(child => {
         return child ? child[getDataMethod]() : null;
       }).filter(item => item !== null);
     }
   },
   created(){
-    // let data = {
-    //   intro: '111',
-    //   picture: 'text/1.png',
-    //   summarize: ['summarize1','summarize2']
-    // }
-
-    this.initData.forEach((item,index) => {
-        this.ruleForm.push({intro: item.intro})
-        // 等待页面刷新完毕
-        this.$nextTick(() => {
-          this.$refs.upload[index].loadData(item.picture)
-          this.$refs.tag[index].loadData(item.summarize)
-        })
-    });
   },
   watch: {
     ruleForm(newForm){

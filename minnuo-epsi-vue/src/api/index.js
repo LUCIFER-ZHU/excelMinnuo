@@ -5,8 +5,8 @@ import { Message } from 'element-ui'
 // 创建 axios 实例
 const instance = axios.create({
   // baseURL: 'https://mn-cncsolutions.com', // 设置你的 API 基础地址
-  // baseURL: 'https://mncnc.com', // 设置你的 API 基础地址
-  baseURL: 'http://localhost:10800', // 设置你的 API 基础地址
+  baseURL: 'https://mncnc.com', // 设置你的 API 基础地址
+  // baseURL: 'http://192.168.10.15:10800', // 设置你的 API 基础地址
   timeout: 5000 // 请求超时时间
 })
 

@@ -76,10 +76,8 @@ class AddProductRo{
         this.formData.append(`productModels[${index}].modelName`,proModel.modelName);
       }
 
-      //循环放入文件内容
-      proModel.modelFile.forEach((file) => {
-        this.formData.append(`productModels[${index}].modelFile`,file);
-      })
+      //放入文件内容
+      this.formData.append(`productModels[${index}].modlePicture`,proModel.modelFile);
 
       //放入详细信息
       proModel.modelDetails.forEach((detail,detailIndex) => {
@@ -102,7 +100,7 @@ class AddProductRo{
 
       //判断是否封装图片
       if(heightLight.file !== undefined){
-        this.formData.append(`heightLights[${index}].file`,heightLight.file);
+        this.formData.append(`heightLights[${index}].picture`,heightLight.file);
       }
 
       // 判断是否封装简介

@@ -42,7 +42,12 @@
 
             <!--图片上传-->
             <el-form-item label="产品图片">
-              <MnUpload ref="addUpload"></MnUpload>
+              <MnUploadAsy
+                ref="addUpload"
+                where="product"
+                :limit="1"
+                exceedMessage="产品图片只能上传1张">
+            </MnUploadAsy>
             </el-form-item>
 
             <el-form-item label="产品系列名">
@@ -68,10 +73,6 @@
 
             <el-form-item label="描述(SEO)">
               <el-input type="textarea" v-model="addFrom.description"></el-input>
-            </el-form-item>
-
-            <el-form-item label="访问路径(SEO)">
-              <el-input v-model="addFrom.seoPath"></el-input>
             </el-form-item>
 
             <el-form-item label="脚本(SEO)" prop="seoScript">
@@ -133,7 +134,12 @@
 
             <!--图片上传-->
             <el-form-item label="产品图片">
-              <MnUpload ref="editUpload"></MnUpload>
+              <MnUploadAsy
+                ref="editUpload"
+                where="product"
+                :limit="1"
+                :initFiles="editFrom.images"
+                exceedMessage="产品图片只能上传1张"></MnUploadAsy>
             </el-form-item>
 
             <el-form-item label="产品系列名">
@@ -203,11 +209,11 @@
 <script>
   import MnPagination from '@/components/table/MnPagination'
   import MnSelectorGroup from '@/components/selector/MnSelectorGroup'
-  import MnUpload from '@/components/table/MnUpload.vue'
+  import MnUploadAsy from '@/components/table/MnUploadAsy.vue'
   import MnWangEditor from '@/components/editor/MnWangEditor.vue'
   import MnTag from '@/components/table/MnTag.vue'
-  import ProductModel from './component/ProductModel'
-  import ProductHeightLight from './component/ProductHeightLight'
+  import ProductModel from './newComponent/ProductModel.vue'
+  import ProductHeightLight from './newComponent/ProductHeightLight.vue'
   import MnFAQ from '@/components/table/MnFAQ'
   import AddProductRo from '@/model/Ro/AddProductRo'
   import EditProductRo from '@/model/Ro/EditProductRo'
@@ -216,7 +222,7 @@
     components: {
       MnPagination,
       MnSelectorGroup,
-      MnUpload,
+      MnUploadAsy,
       MnWangEditor,
       MnTag,
       ProductModel,
@@ -289,7 +295,8 @@
           description: '',
           seoPath: '',
           seoScript: '',
-          sorting: ''
+          sorting: '',
+          images:[''],
         },
         editDrawer: false,
         editLoading: false
@@ -378,6 +385,11 @@
           this.editFrom.seoPath = reslut.seoPath
           this.editFrom.seoScript = reslut.seoScript
           this.editFrom.sorting = reslut.sorting
+          if (typeof reslut.images === 'string') {
+            this.editFrom.images = [reslut.images]
+          } else {
+            this.editFrom.images = reslut.images
+          }
           this.editDrawer = true
           // 回显封装数据
           let type = reslut.type
@@ -390,9 +402,12 @@
 
           // 渲染数据
           this.$nextTick(() => {
-            this.$refs.editUpload.loadData(reslut.images)
             this.$refs.editType.setOption(types)
             this.$refs.editEditor.loadData(reslut.content)
+            // if (Array.isArray(reslut.keywords) && reslut.keywords[0] && typeof reslut.keywords[0] === 'string') {
+            //   const tempKeywords = JSON.parse(reslut.keywords[0])
+            //   this.$refs.editKeywords.loadData(tempKeywords)
+            // }
             this.$refs.editKeywords.loadData(reslut.keywords)
             this.$refs.editHeightLight.initData(reslut.hightLight)
             this.$refs.editProductModel.initData(reslut.modle)

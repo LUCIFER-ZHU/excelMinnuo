@@ -11,7 +11,14 @@
           </el-form-item>
 
           <el-form-item label="型号图片" prop="modelPicture">
-            <MnUpload :isRemove="true" :key="'picture' + item" ref="upload" :limit="0"></MnUpload>
+            <MnUploadAsy
+              :key="'upload' + item"
+              ref="upload"
+              where="product"
+              :limit="0"
+              :initFiles="item.initFiles"
+              exceedMessage="型号图片只能上传1张">
+            </MnUploadAsy>
           </el-form-item>
 
           <el-form-item label="型号详情">
@@ -35,13 +42,13 @@
 </template>
 
 <script>
-import MnUpload from '@/components/table/MnUpload.vue'
+import MnUploadAsy from '@/components/table/MnUploadAsy.vue'
 import MnTag from '@/components/table/MnTag.vue'
 import ProductModel from '@/model/Ro/ProductModel'
 
 export default {
   components: {
-    MnUpload,
+    MnUploadAsy,
     MnTag
   },
   data() {
@@ -52,7 +59,7 @@ export default {
             modelName: ''
           }
       ],
-      isDelete: true
+      isDelete: true,
     }
   },
   methods: {
@@ -98,17 +105,20 @@ export default {
 
       this.ruleForm = []
       model.forEach((item,index) => {
-        this.ruleForm.push({modelName: item.modelName});
+        const tempRuleItem = {modelName: item.modelName}
+        if (Array.isArray(item.modlePicture)) {
+          tempRuleItem.initFiles = item.modlePicture
+        }
+        this.ruleForm.push(tempRuleItem);
         // 等待页面刷新完毕
         this.$nextTick(() => {
-          this.$refs.upload[index].loadData(item.modlePicture)
           this.$refs.tag[index].loadData(item.modelDetails)
         })
       })
     },
     // 抽象的内容获取函数，这样可以把两个组件的获取逻辑合并
     childComponentMethod(refName, getDataMethod){
-      return this.$refs[refName].map(child => {
+      return this.$refs[refName]?.map(child => {
         return child ? child[getDataMethod]() : null;
       }).filter(item => item !== null);
     }
@@ -123,12 +133,7 @@ export default {
       }
     }
   }
-  // created () {
-  //   this.$request.get('/product/getById/15').then((res) => {
-  //     let data = res.data.modle;
-  //     this.initData(data);
-  //   })
-  // }
+
 }
 </script>
 

@@ -16,6 +16,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@element-plus/icons-vue": "^2.3.1",
     "@grapecity-software/spread-excelio": "^18.1.2",
     "@grapecity-software/spread-sheets": "^18.1.2",
     "@grapecity-software/spread-sheets-barcode": "^18.1.2",
@@ -36,6 +37,7 @@
     "@grapecity-software/spread-sheets-tablesheet": "^18.1.2",
     "@grapecity-software/spread-sheets-vue": "^18.1.2",
     "@handsontable/vue3": "^11.1.0",
+    "@univerjs/presets": "^0.8.0",
     "element-plus": "^2.10.1",
     "handsontable": "^15.3.0",
     "pinia": "^3.0.1",
@@ -58,6 +60,7 @@
     "eslint-plugin-vue": "~10.0.0",
     "jiti": "^2.4.2",
     "jsdom": "^26.0.0",
+    "less": "^4.3.0",
     "npm-run-all2": "^7.0.2",
     "oxlint": "^0.16.0",
     "prettier": "3.5.3",
