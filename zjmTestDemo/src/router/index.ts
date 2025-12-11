@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { TestExcel, TestExcel2, Website } from '@/components/testDemo/index.ts'
+import { TestExcel, TestExcel2, Website, JsonEditor } from '@/components/testDemo/index.ts'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -15,6 +15,10 @@ const router = createRouter({
     {
       path: '/2',
       component: Website,
+    },
+    {
+      path: '/3',
+      component: JsonEditor,
     },
   ],
 })

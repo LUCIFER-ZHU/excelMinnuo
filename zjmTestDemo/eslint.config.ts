@@ -1,47 +1,42 @@
-import { globalIgnores } from 'eslint/config'
-import { defineConfigWithVueTs, vueTsConfigs } from '@vue/eslint-config-typescript'
+// 带有明确规则级别的简化 ESLint 配置
 import pluginVue from 'eslint-plugin-vue'
-import pluginVitest from '@vitest/eslint-plugin'
-import pluginOxlint from 'eslint-plugin-oxlint'
-import skipFormatting from '@vue/eslint-config-prettier/skip-formatting'
+import vueTsEslintConfig from '@vue/eslint-config-typescript'
 
-// To allow more languages other than `ts` in `.vue` files, uncomment the following lines:
-// import { configureVueProject } from '@vue/eslint-config-typescript'
-// configureVueProject({ scriptLangs: ['ts', 'tsx'] })
-// More info at https://github.com/vuejs/eslint-config-typescript/#advanced-setup
-
-export default defineConfigWithVueTs(
+export default [
   {
     name: 'app/files-to-lint',
     files: ['**/*.{ts,mts,tsx,vue}'],
     rules: {
-      '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/no-non-null-assertion': 'off',
-      '@typescript-eslint/no-unused-vars': 'off',
-      'no-console': 'off',
-      'no-debugger': 'off',
-      'no-var': 'off',
-      'no-empty': 'off',
-      'no-extra-semi': 'off',
-      'no-undef': 'off',
-      'no-unused-vars': 'off',
-      'no-useless-escape': 'off',
-      'no-redeclare': 'off',
-      'no-empty-function': 'off',
-      'no-empty-pattern': 'off',
-      'no-constant-condition': 'off',
+      // 使用 "off" 或 0 来完全禁用规则
+      '@typescript-eslint/no-explicit-any': 0,
+      '@typescript-eslint/no-non-null-assertion': 0,
+      '@typescript-eslint/no-unused-vars': 0,
+      '@typescript-eslint/no-empty-function': 0,
+      '@typescript-eslint/no-empty-interface': 0,
+      'no-console': 0,
+      'no-debugger': 0,
+      'no-unused-vars': 0,
+      'no-undef': 0,
+      'vue/multi-word-component-names': 0,
+      'no-empty': 0,
+      'no-constant-condition': 0
     },
   },
-
-  globalIgnores(['**/dist/**', '**/dist-ssr/**', '**/coverage/**']),
-
-  pluginVue.configs['flat/essential'],
-  vueTsConfigs.recommended,
-
   {
-    ...pluginVitest.configs.recommended,
-    files: ['src/**/__tests__/*'],
+    name: 'app/files-to-ignore',
+    ignores: ['**/dist/**', '**/dist-ssr/**', '**/coverage/**'],
   },
-  ...pluginOxlint.configs['flat/recommended'],
-  skipFormatting,
-)
+  // 添加 Vue 基本配置
+  ...pluginVue.configs['flat/essential'],
+  {
+    // 覆盖 Vue 配置中的规则
+    ...vueTsEslintConfig()[0],
+    rules: {
+      ...(vueTsEslintConfig()[0]?.rules || {}),
+      '@typescript-eslint/no-explicit-any': 0,
+      '@typescript-eslint/no-non-null-assertion': 0,
+      '@typescript-eslint/no-unused-vars': 0,
+    }
+  },
+  ...(vueTsEslintConfig().slice(1) || [])
+]
