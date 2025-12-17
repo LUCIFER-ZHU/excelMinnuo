@@ -24,7 +24,7 @@ import { ref } from 'vue'
 import JsonEditorVue from 'json-editor-vue'
 import { ElButton } from 'element-plus'
 
-const jsonData = ref<any>({
+const jsonData = ref<Record<string, unknown>>({
   name: '测试数据',
   age: 30,
   city: '北京',
