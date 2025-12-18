@@ -1,15 +1,31 @@
 <template>
   <div class="custom-node" :class="getNodeClass">
+    <!-- 开始节点只有输出连接桩 -->
+    <Handle v-if="data.type === 'start'" type="source" :position="Position.Right" />
+    
+    <!-- 任务节点和审批节点既有输入又有输出连接桩 -->
+    <Handle v-else-if="data.type === 'task' || data.type === 'approval'" type="target" :position="Position.Left" />
+    <Handle v-else-if="data.type === 'task' || data.type === 'approval'" type="source" :position="Position.Right" />
+    
+    <!-- 结束节点只有输入连接桩 -->
+    <Handle v-else-if="data.type === 'end'" type="target" :position="Position.Left" />
+    
     <div class="node-header">
-      <i :class="getIconClass"></i>
+      <el-icon :size="16" class="node-icon">
+        <component :is="getIconComponent" />
+      </el-icon>
       <span class="node-label">{{ data.label }}</span>
       <button class="delete-btn" @click="onDelete">
-        <i class="el-icon-close"></i>
+        <el-icon :size="14" class="delete-icon">
+          <Close />
+        </el-icon>
       </button>
     </div>
     <div class="node-content" v-if="data.assignee || data.description">
       <div v-if="data.assignee" class="node-assignee">
-        <i class="el-icon-user"></i>
+        <el-icon :size="14" class="assignee-icon">
+          <User />
+        </el-icon>
         <span>{{ data.assignee }}</span>
       </div>
       <div v-if="data.description" class="node-description">
@@ -21,7 +37,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { Handle, Position } from '@vue-flow/core'
 import type { NodeProps } from '@vue-flow/core'
+import { ElIcon } from 'element-plus'
+import { VideoPlay, Document, CircleCheck, CircleClose, Close, User } from '@element-plus/icons-vue'
 
 // 定义节点数据结构
 interface CustomNodeData {
@@ -50,20 +69,20 @@ const getNodeClass = computed(() => {
 })
 
 /**
- * 获取节点类型对应的图标
+ * 获取节点类型对应的图标组件
  */
-const getIconClass = computed(() => {
+const getIconComponent = computed(() => {
   switch (props.data.type) {
     case 'start':
-      return 'el-icon-video-play'
+      return VideoPlay
     case 'task':
-      return 'el-icon-tickets'
+      return Document
     case 'approval':
-      return 'el-icon-circle-check'
+      return CircleCheck
     case 'end':
-      return 'el-icon-circle-close'
+      return CircleClose
     default:
-      return 'el-icon-tickets'
+      return Document
   }
 })
 
@@ -119,14 +138,28 @@ const onDelete = () => {
   border-left: 4px solid #f5222d;
 }
 
+.node-icon {
+  margin-right: 8px;
+}
+
 .node-label {
-  margin-left: 8px;
+  margin-left: 0;
   font-weight: 600;
   color: #333;
   flex: 1;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.delete-icon {
+  font-size: 14px;
+}
+
+.assignee-icon {
+  margin-right: 4px;
+  color: #1890ff;
+  font-size: 14px;
 }
 
 .delete-btn {

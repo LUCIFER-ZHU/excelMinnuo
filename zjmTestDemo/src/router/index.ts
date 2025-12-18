@@ -4,11 +4,11 @@ import {
   TestExcel2,
   Website,
   JsonEditor,
-  ApprovalWorkflow,
-} from '@/components/testDemo/index.ts'
+  DragDropApprovalWorkflow
+} from '../components/testDemo/index'
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHistory('/'),
   routes: [
     {
       path: '/',
@@ -27,8 +27,8 @@ const router = createRouter({
       component: JsonEditor,
     },
     {
-      path: '/4',
-      component: ApprovalWorkflow,
+      path: '/5',
+      component: DragDropApprovalWorkflow,
     },
   ],
 })

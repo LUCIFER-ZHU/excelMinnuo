@@ -9,7 +9,9 @@
         <h3>节点类型</h3>
         <div v-for="nodeType in nodeTypes" :key="nodeType.type" class="draggable-node" :class="`node-${nodeType.type}`"
           :draggable="true" @dragstart="onDragStart($event, nodeType)">
-          <i :class="nodeType.icon"></i>
+          <el-icon :size="16" class="node-icon">
+            <component :is="getIconComponent(nodeType.icon)" />
+          </el-icon>
           {{ nodeType.label }}
         </div>
       </div>
@@ -66,7 +68,13 @@ import {
 import { Controls } from '@vue-flow/controls'
 import { MiniMap } from '@vue-flow/minimap'
 import CustomNode from './CustomNode.vue'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElIcon } from 'element-plus'
+import { VideoPlay, Document, CircleCheck, CircleClose } from '@element-plus/icons-vue'
+
+import '@vue-flow/core/dist/style.css';
+import '@vue-flow/core/dist/theme-default.css';
+import '@vue-flow/minimap/dist/style.css'
+import '@vue-flow/controls/dist/style.css'
 
 // 定义节点类型接口
 interface NodeType {
@@ -89,12 +97,32 @@ interface CustomNodeData {
   type: string
 }
 
+/**
+ * 根据图标名称获取对应的图标组件
+ * @param iconName 图标名称
+ * @returns 图标组件
+ */
+const getIconComponent = (iconName: string) => {
+  switch (iconName) {
+    case 'VideoPlay':
+      return VideoPlay
+    case 'Document':
+      return Document
+    case 'CircleCheck':
+      return CircleCheck
+    case 'CircleClose':
+      return CircleClose
+    default:
+      return Document
+  }
+}
+
 // 节点类型列表
 const nodeTypes = ref<NodeType[]>([
   {
     type: 'start',
     label: '开始节点',
-    icon: 'el-icon-video-play',
+    icon: 'VideoPlay',
     data: {
       label: '开始',
       description: '流程开始节点',
@@ -104,7 +132,7 @@ const nodeTypes = ref<NodeType[]>([
   {
     type: 'task',
     label: '任务节点',
-    icon: 'el-icon-tickets',
+    icon: 'Document',
     data: {
       label: '任务',
       assignee: '处理人',
@@ -115,7 +143,7 @@ const nodeTypes = ref<NodeType[]>([
   {
     type: 'approval',
     label: '审批节点',
-    icon: 'el-icon-circle-check',
+    icon: 'CircleCheck',
     data: {
       label: '审批',
       assignee: '审批人',
@@ -126,7 +154,7 @@ const nodeTypes = ref<NodeType[]>([
   {
     type: 'end',
     label: '结束节点',
-    icon: 'el-icon-circle-close',
+    icon: 'CircleClose',
     data: {
       label: '结束',
       description: '流程结束节点',
@@ -417,7 +445,7 @@ const updateNodeData = () => {
   cursor: grabbing;
 }
 
-.draggable-node i {
+.node-icon {
   margin-right: 8px;
 }
 
