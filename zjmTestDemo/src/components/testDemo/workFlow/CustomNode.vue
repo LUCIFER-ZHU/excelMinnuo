@@ -4,8 +4,8 @@
     <Handle v-if="data.type === 'start'" type="source" :position="Position.Right" />
     
     <!-- 任务节点和审批节点既有输入又有输出连接桩 -->
-    <Handle v-else-if="data.type === 'task' || data.type === 'approval'" type="target" :position="Position.Left" />
-    <Handle v-else-if="data.type === 'task' || data.type === 'approval'" type="source" :position="Position.Right" />
+    <Handle v-if="data.type === 'task' || data.type === 'approval'" type="target" :position="Position.Left" />
+    <Handle v-if="data.type === 'task' || data.type === 'approval'" type="source" :position="Position.Right" />
     
     <!-- 结束节点只有输入连接桩 -->
     <Handle v-else-if="data.type === 'end'" type="target" :position="Position.Left" />
@@ -107,7 +107,23 @@ const onDelete = () => {
 
 .custom-node:hover {
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-  transform: translateY(-2px);
+}
+
+/* 节点类型特定的hover边框颜色 */
+.custom-node.node-start:hover {
+  border-color: #73d13d;
+}
+
+.custom-node.node-task:hover {
+  border-color: #40a9ff;
+}
+
+.custom-node.node-approval:hover {
+  border-color: #ffc53d;
+}
+
+.custom-node.node-end:hover {
+  border-color: #ff4d4f;
 }
 
 .node-header {
@@ -120,22 +136,22 @@ const onDelete = () => {
 
 .node-start {
   border-color: #52c41a;
-  border-left: 4px solid #52c41a;
+  border-left: 3px solid #52c41a;
 }
 
 .node-task {
   border-color: #1890ff;
-  border-left: 4px solid #1890ff;
+  border-left: 3px solid #1890ff;
 }
 
 .node-approval {
   border-color: #faad14;
-  border-left: 4px solid #faad14;
+  border-left: 3px solid #faad14;
 }
 
 .node-end {
   border-color: #f5222d;
-  border-left: 4px solid #f5222d;
+  border-left: 3px solid #f5222d;
 }
 
 .node-icon {
