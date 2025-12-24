@@ -4,7 +4,8 @@ import {
   TestExcel2,
   Website,
   JsonEditor,
-  DragDropApprovalWorkflow
+  DragDropApprovalWorkflow,
+  WorkflowSelector
 } from '../components/testDemo/index'
 
 const router = createRouter({
@@ -27,8 +28,12 @@ const router = createRouter({
       component: JsonEditor,
     },
     {
-      path: '/5',
+      path: '/4',
       component: DragDropApprovalWorkflow,
+    },
+    {
+      path: '/workflow-selector',
+      component: WorkflowSelector,
     },
   ],
 })

@@ -1,14 +1,14 @@
 <template>
   <div class="custom-node" :class="getNodeClass">
     <!-- 开始节点只有输出连接桩 -->
-    <Handle v-if="data.type === 'start'" type="source" :position="Position.Right" />
+    <Handle v-if="data.type === 'start'" type="source" id="right" :position="Position.Right" />
     
     <!-- 任务节点和审批节点既有输入又有输出连接桩 -->
-    <Handle v-if="data.type === 'task' || data.type === 'approval'" type="target" :position="Position.Left" />
-    <Handle v-if="data.type === 'task' || data.type === 'approval'" type="source" :position="Position.Right" />
+    <Handle v-if="data.type === 'task' || data.type === 'approval'" type="target" id="left" :position="Position.Left" />
+    <Handle v-if="data.type === 'task' || data.type === 'approval'" type="source" id="right" :position="Position.Right" />
     
     <!-- 结束节点只有输入连接桩 -->
-    <Handle v-else-if="data.type === 'end'" type="target" :position="Position.Left" />
+    <Handle v-else-if="data.type === 'end'" type="target" id="left" :position="Position.Left" />
     
     <div class="node-header">
       <el-icon :size="16" class="node-icon">
@@ -218,5 +218,14 @@ const onDelete = () => {
   font-size: 12px;
   line-height: 1.4;
   color: #888;
+}
+
+/* Vue Flow Handle 样式 */
+:deep(.vue-flow__handle) {
+  width: 12px;
+  height: 12px;
+  background: #555;
+  border: 2px solid white;
+  border-radius: 50%;
 }
 </style>

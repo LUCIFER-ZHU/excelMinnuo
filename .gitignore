@@ -28,3 +28,7 @@ coverage
 *.sw?
 
 *.tsbuildinfo
+
+# Auto-generated JavaScript files from TypeScript/Vue files
+**/*.vue.js
+**/*.ts.js

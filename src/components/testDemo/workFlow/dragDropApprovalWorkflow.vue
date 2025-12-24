@@ -39,7 +39,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import {
   VueFlow,
   useVueFlow,
@@ -63,6 +63,25 @@ import '@vue-flow/core/dist/style.css';
 import '@vue-flow/core/dist/theme-default.css';
 import '@vue-flow/minimap/dist/style.css'
 import '@vue-flow/controls/dist/style.css'
+
+// 定义组件 Props
+interface WorkflowConfig {
+  nodes: Node<CustomNodeData>[]
+  edges: Edge<EdgeCondition>[]
+  viewport?: {
+    x: number
+    y: number
+    zoom: number
+  }
+}
+
+/**
+ * 组件属性
+ */
+const props = defineProps<{
+  /** 初始配置，用于编辑模式加载现有工作流 */
+  initialConfig?: WorkflowConfig
+}>()
 
 
 
@@ -122,7 +141,8 @@ const {
   removeNodes,
   screenToFlowCoordinate,
   toObject,
-  fromObject
+  fromObject,
+  onInit
 } = useVueFlow()
 
 // 选中的节点
@@ -134,99 +154,121 @@ const selectedEdge = ref<Edge<EdgeCondition> | null>(null)
 // localStorage存储键名
 const storageKey = 'workflow-data'
 
-// 初始化节点
-onMounted(() => {
-  // 添加初始节点
-  const startNode: Node<CustomNodeData> = {
-    id: 'start-node',
-    type: 'custom',
-    position: { x: 0, y: 0 },
-    data: {
-      label: '开始',
-      type: 'start',
-      description: '流程开始节点'
+/**
+ * Vue Flow 初始化事件处理
+ * 在 Vue Flow 完全初始化后添加初始节点或加载配置
+ * @param instance Vue Flow 实例
+ */
+onInit((instance) => {
+  console.log('Vue Flow 已初始化', instance)
+  
+  // 如果提供了初始配置，则加载配置（编辑模式）
+  if (props.initialConfig) {
+    console.log('加载初始配置:', props.initialConfig)
+    fromObject(props.initialConfig)
+    // 恢复视口位置
+    if (props.initialConfig.viewport) {
+      instance.setViewport(props.initialConfig.viewport)
     }
-  }
-
-  const taskNode: Node<CustomNodeData> = {
-    id: 'task-node',
-    type: 'custom',
-    position: { x: 200, y: 0 },
-    data: {
-      label: '提交申请',
-      type: 'task',
-      assignee: '申请人',
-      description: '提交审批申请'
+    console.log('初始配置加载完成')
+  } else {
+    // 否则添加默认节点（新增模式）
+    // 添加初始节点
+    const startNode: Node<CustomNodeData> = {
+      id: 'start-node',
+      type: 'custom',
+      position: { x: 0, y: 0 },
+      data: {
+        label: '开始',
+        type: 'start',
+        description: '流程开始节点'
+      }
     }
-  }
 
-  const approvalNode: Node<CustomNodeData> = {
-    id: 'approval-node',
-    type: 'custom',
-    position: { x: 400, y: 0 },
-    data: {
-      label: '部门审批',
-      type: 'approval',
-      assignee: '部门经理',
-      description: '部门经理审批'
+    const taskNode: Node<CustomNodeData> = {
+      id: 'task-node',
+      type: 'custom',
+      position: { x: 200, y: 0 },
+      data: {
+        label: '提交申请',
+        type: 'task',
+        assignee: '申请人',
+        description: '提交审批申请'
+      }
     }
-  }
 
-  const endNode: Node<CustomNodeData> = {
-    id: 'end-node',
-    type: 'custom',
-    position: { x: 600, y: 0 },
-    data: {
-      label: '结束',
-      type: 'end',
-      description: '流程结束'
+    const approvalNode: Node<CustomNodeData> = {
+      id: 'approval-node',
+      type: 'custom',
+      position: { x: 400, y: 0 },
+      data: {
+        label: '部门审批',
+        type: 'approval',
+        assignee: '部门经理',
+        description: '部门经理审批'
+      }
     }
-  }
 
-  addNodes([startNode, taskNode, approvalNode, endNode])
+    const endNode: Node<CustomNodeData> = {
+      id: 'end-node',
+      type: 'custom',
+      position: { x: 600, y: 0 },
+      data: {
+        label: '结束',
+        type: 'end',
+        description: '流程结束'
+      }
+    }
 
-  // 添加边
-  addEdges([
-    { 
-      id: 'e1-2', 
-      source: 'start-node', 
-      target: 'task-node', 
-      animated: true,
-      style: { strokeDasharray: '0' }, // 设置实线样式
-      markerEnd: { // 添加实心箭头标记
-        type: MarkerType.ArrowClosed, // 使用 MarkerType 枚举设置实心箭头类型
-        color: '#555' // 箭头颜色
+    addNodes([startNode, taskNode, approvalNode, endNode])
+
+    // 添加边
+    addEdges([
+      { 
+        id: 'e1-2', 
+        source: 'start-node', 
+        target: 'task-node', 
+        animated: true,
+        style: { strokeDasharray: '0' }, // 设置实线样式
+        markerEnd: { // 添加实心箭头标记
+          type: MarkerType.ArrowClosed, // 使用 MarkerType 枚举设置实心箭头类型
+          color: '#555' // 箭头颜色
+        },
+        data: { expression: '', description: '', type: 'normal' } as EdgeCondition,
+        label: ''
       },
-      data: { expression: '', description: '', type: 'normal' } as EdgeCondition,
-      label: ''
-    },
-    { 
-      id: 'e2-3', 
-      source: 'task-node', 
-      target: 'approval-node', 
-      animated: true,
-      style: { strokeDasharray: '0' }, // 设置实线样式
-      markerEnd: { // 添加实心箭头标记
-        type: MarkerType.ArrowClosed, // 使用 MarkerType 枚举设置实心箭头类型
-        color: '#555' // 箭头颜色
+      { 
+        id: 'e2-3', 
+        source: 'task-node', 
+        target: 'approval-node', 
+        animated: true,
+        style: { strokeDasharray: '0' }, // 设置实线样式
+        markerEnd: { // 添加实心箭头标记
+          type: MarkerType.ArrowClosed, // 使用 MarkerType 枚举设置实心箭头类型
+          color: '#555' // 箭头颜色
+        },
+        data: { expression: '', description: '', type: 'normal' } as EdgeCondition,
+        label: ''
       },
-      data: { expression: '', description: '', type: 'normal' } as EdgeCondition,
-      label: ''
-    },
-    { 
-      id: 'e3-4', 
-      source: 'approval-node', 
-      target: 'end-node', 
-      animated: true,
-      style: { strokeDasharray: '0' }, // 设置实线样式
-      markerEnd: { // 添加实心箭头标记
-        type: MarkerType.ArrowClosed, // 使用 MarkerType 枚举设置实心箭头类型
-        color: '#555' // 箭头颜色
-      },
-      data: { expression: '', description: '', type: 'normal' } as EdgeCondition,
-      label: ''
-    }
-  ])
+      { 
+        id: 'e3-4', 
+        source: 'approval-node', 
+        target: 'end-node', 
+        animated: true,
+        style: { strokeDasharray: '0' }, // 设置实线样式
+        markerEnd: { // 添加实心箭头标记
+          type: MarkerType.ArrowClosed, // 使用 MarkerType 枚举设置实心箭头类型
+          color: '#555' // 箭头颜色
+        },
+        data: { expression: '', description: '', type: 'normal' } as EdgeCondition,
+        label: ''
+      }
+    ])
+
+    // 调整视口大小，使所有节点可见
+    instance.fitView()
+    console.log('初始节点和边已添加')
+  }
 })
 
 /**
@@ -513,14 +555,55 @@ const loadFromLocalStorage = () => {
     ElMessage.error('工作流数据加载失败')
   }
 }
+
+/**
+ * 获取当前工作流配置
+ * 用于保存工作流数据到父组件
+ * @returns 工作流配置对象，包含节点、边和视口信息
+ */
+const getWorkflowConfig = (): WorkflowConfig => {
+  try {
+    // 使用Vue Flow的toObject方法获取完整的工作流数据
+    const workflowData = toObject()
+    
+    const config: WorkflowConfig = {
+      nodes: workflowData.nodes as Node<CustomNodeData>[],
+      edges: workflowData.edges as Edge<EdgeCondition>[],
+      viewport: {
+        x: workflowData.viewport.x,
+        y: workflowData.viewport.y,
+        zoom: workflowData.viewport.zoom
+      }
+    }
+    
+    console.log('获取工作流配置:', config)
+    return config
+  } catch (error) {
+    console.error('获取工作流配置失败:', error)
+    throw error
+  }
+}
+
+/**
+ * 暴露方法给父组件
+ */
+defineExpose({
+  getWorkflowConfig
+})
 </script>
 
 <style scoped>
 .workflow-container {
   width: 100%;
   height: 100vh;
+  min-height: 600px;
   display: flex;
   flex-direction: column;
+}
+
+/* 当组件在模态框或其他有固定高度的容器中使用时，覆盖高度 */
+.workflow-container.in-modal {
+  height: 100%;
 }
 
 .workflow-header {
@@ -546,6 +629,7 @@ const loadFromLocalStorage = () => {
   display: flex;
   flex: 1;
   overflow: hidden;
+  position: relative;
 }
 
 .canvas {
