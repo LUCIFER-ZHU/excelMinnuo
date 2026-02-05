@@ -5,7 +5,8 @@ import {
   Website,
   JsonEditor,
   DragDropApprovalWorkflow,
-  WorkflowSelector
+  WorkflowSelector,
+  electronicSignature
 } from '../components/testDemo/index'
 
 const router = createRouter({
@@ -34,6 +35,10 @@ const router = createRouter({
     {
       path: '/workflow-selector',
       component: WorkflowSelector,
+    },
+    {
+      path: '/electronic-signature',
+      component: electronicSignature,
     },
   ],
 })
